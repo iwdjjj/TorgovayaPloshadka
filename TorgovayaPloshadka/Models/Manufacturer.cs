@@ -32,6 +32,7 @@ namespace TorgovayaPloshadka.Models
         [Display(Name = "Отчество")]
         public string? Midname { get; set; }
 
+        [Display(Name = "ФИО")]
         public string? FIO
         {
             get

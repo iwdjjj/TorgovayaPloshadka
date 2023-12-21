@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+@model IEnumerable<TorgovayaPloshadka.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Товары</h1>
+<h1>Категория товаров: @ViewData["CategoryName"]</h1>
+
+<p>
+    <a asp-action="Index" asp-controller="Categories">Возврат к списку категорий</a>
+    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded || (await AuthorizationService.AuthorizeAsync(User, "RequireGuestRole")).Succeeded)
+    {
+        <br />
+
+        <a asp-action="Create" asp-route-id="@ViewData["IdCategory"]">Добавить товар</a>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Manufacturer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Supplier)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Proportions)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Manufacturer.FIO)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Supplier.FIO)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Proportions)
+            </td>
+            <td>
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Детали</a>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded || (await AuthorizationService.AuthorizeAsync(User, "RequireGuestRole")).Succeeded)
+                    { 
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Редактировать</a>                        
+                        <a asp-action="Delete" asp-route-id="@item.ProductId">Удалить</a>
+                    }
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

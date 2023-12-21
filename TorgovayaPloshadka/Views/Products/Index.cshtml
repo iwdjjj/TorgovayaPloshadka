@@ -1,4 +1,6 @@
-﻿@model IEnumerable<TorgovayaPloshadka.Models.Product>
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+@model IEnumerable<TorgovayaPloshadka.Models.Product>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,7 +9,10 @@
 <h1>Товары</h1>
 
 <p>
-    <a asp-action="Create">Добавить товар</a>
+    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded || (await AuthorizationService.AuthorizeAsync(User, "RequireGuestRole")).Succeeded)
+    {
+        <a asp-action="Create">Добавить товар</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -46,10 +51,10 @@
                 @Html.DisplayFor(modelItem => item.Category.CategoryName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Manufacturer.Address)
+                    @Html.DisplayFor(modelItem => item.Manufacturer.FIO)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Supplier.Address)
+                    @Html.DisplayFor(modelItem => item.Supplier.FIO)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
@@ -61,9 +66,13 @@
                 @Html.DisplayFor(modelItem => item.Proportions)
             </td>
             <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductId">Редактировать</a> |
-                    <a asp-action="Details" asp-route-id="@item.ProductId">Детали</a> |
-                    <a asp-action="Delete" asp-route-id="@item.ProductId">Удалить</a>
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Детали</a>
+                    
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireAdministratorRole")).Succeeded || (await AuthorizationService.AuthorizeAsync(User, "RequireGuestRole")).Succeeded)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.ProductId">Редактировать</a>
+                        <a asp-action="Delete" asp-route-id="@item.ProductId">Удалить</a>
+                    }
             </td>
         </tr>
 }

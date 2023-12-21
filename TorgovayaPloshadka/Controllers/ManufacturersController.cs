@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Manufacturers
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Index()
         {
               return _context.Manufacturers != null ? 
@@ -28,6 +30,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Manufacturers/Details/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Manufacturers == null)
@@ -46,6 +49,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Manufacturers/Create
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +58,7 @@ namespace TorgovayaPloshadka.Controllers
         // POST: Manufacturers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ManufacturerId,Title,Address,Phone,Surname,Name,Midname")] Manufacturer manufacturer)
@@ -68,6 +73,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Manufacturers/Edit/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Manufacturers == null)
@@ -86,6 +92,7 @@ namespace TorgovayaPloshadka.Controllers
         // POST: Manufacturers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administrator")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ManufacturerId,Title,Address,Phone,Surname,Name,Midname")] Manufacturer manufacturer)
@@ -119,6 +126,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Manufacturers/Delete/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Manufacturers == null)
@@ -137,6 +145,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // POST: Manufacturers/Delete/5
+        [Authorize(Roles = "Administrator")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

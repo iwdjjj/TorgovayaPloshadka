@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -48,17 +49,19 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Administrator,Guest")]
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName");
-            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "Address");
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address");
+            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "FIO");
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "FIO");
             return View();
         }
 
         // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administrator,Guest")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,CategoryId,ManufacturerId,SupplierId,Price,Weight,Proportions")] Product product)
@@ -70,12 +73,13 @@ namespace TorgovayaPloshadka.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "Address", product.ManufacturerId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address", product.SupplierId);
+            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "FIO", product.ManufacturerId);
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "FIO", product.SupplierId);
             return View(product);
         }
 
         // GET: Products/Edit/5
+        [Authorize(Roles = "Administrator,Guest")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Products == null)
@@ -89,14 +93,15 @@ namespace TorgovayaPloshadka.Controllers
                 return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "Address", product.ManufacturerId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address", product.SupplierId);
+            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "FIO", product.ManufacturerId);
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "FIO", product.SupplierId);
             return View(product);
         }
 
         // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administrator,Guest")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,CategoryId,ManufacturerId,SupplierId,Price,Weight,Proportions")] Product product)
@@ -127,12 +132,13 @@ namespace TorgovayaPloshadka.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryName", product.CategoryId);
-            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "Address", product.ManufacturerId);
-            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "Address", product.SupplierId);
+            ViewData["ManufacturerId"] = new SelectList(_context.Manufacturers, "ManufacturerId", "FIO", product.ManufacturerId);
+            ViewData["SupplierId"] = new SelectList(_context.Suppliers, "SupplierId", "FIO", product.SupplierId);
             return View(product);
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Administrator,Guest")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Products == null)
@@ -154,6 +160,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // POST: Products/Delete/5
+        [Authorize(Roles = "Administrator,Guest")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

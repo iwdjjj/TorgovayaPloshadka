@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Orders
+        [Authorize(Roles = "Administrator,Guest")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Orders.Include(o => o.Customer).Include(o => o.Product);
@@ -27,6 +29,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Orders/Details/5
+        [Authorize(Roles = "Administrator,Guest")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Orders == null)
@@ -47,9 +50,10 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // GET: Orders/Create
+        [Authorize(Roles = "Administrator,Guest")]
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address");
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FIO");
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName");
             return View();
         }
@@ -57,6 +61,7 @@ namespace TorgovayaPloshadka.Controllers
         // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administrator,Guest")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("OrderId,CustomerId,ProductId,Date_Ordered,Count")] Order order)
@@ -67,12 +72,13 @@ namespace TorgovayaPloshadka.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", order.CustomerId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FIO", order.CustomerId);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", order.ProductId);
             return View(order);
         }
 
         // GET: Orders/Edit/5
+        [Authorize(Roles = "Administrator,Guest")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Orders == null)
@@ -85,7 +91,7 @@ namespace TorgovayaPloshadka.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", order.CustomerId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FIO", order.CustomerId);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", order.ProductId);
             return View(order);
         }
@@ -93,6 +99,7 @@ namespace TorgovayaPloshadka.Controllers
         // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administrator,Guest")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("OrderId,CustomerId,ProductId,Date_Ordered,Count")] Order order)
@@ -122,12 +129,13 @@ namespace TorgovayaPloshadka.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "Address", order.CustomerId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "FIO", order.CustomerId);
             ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductName", order.ProductId);
             return View(order);
         }
 
         // GET: Orders/Delete/5
+        [Authorize(Roles = "Administrator,Guest")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Orders == null)
@@ -148,6 +156,7 @@ namespace TorgovayaPloshadka.Controllers
         }
 
         // POST: Orders/Delete/5
+        [Authorize(Roles = "Administrator,Guest")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

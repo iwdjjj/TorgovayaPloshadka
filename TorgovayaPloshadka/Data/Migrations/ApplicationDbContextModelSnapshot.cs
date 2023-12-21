@@ -86,6 +86,10 @@ namespace TorgovayaPloshadka.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -137,6 +141,10 @@ namespace TorgovayaPloshadka.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -233,15 +241,20 @@ namespace TorgovayaPloshadka.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
                     b.Property<string>("CategoryName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Products_Count")
+                        .HasColumnType("int");
+
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", t =>
+                        {
+                            t.HasTrigger("Check_Category");
+                        });
                 });
 
             modelBuilder.Entity("TorgovayaPloshadka.Models.Customer", b =>
@@ -274,6 +287,22 @@ namespace TorgovayaPloshadka.Data.Migrations
                     b.HasKey("CustomerId");
 
                     b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("TorgovayaPloshadka.Models.Doljnost", b =>
+                {
+                    b.Property<int>("DoljnostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoljnostId"));
+
+                    b.Property<string>("DoljnostName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DoljnostId");
+
+                    b.ToTable("Doljnosts");
                 });
 
             modelBuilder.Entity("TorgovayaPloshadka.Models.Manufacturer", b =>
@@ -344,6 +373,20 @@ namespace TorgovayaPloshadka.Data.Migrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("TorgovayaPloshadka.Models.Order_CountOtchet", b =>
+                {
+                    b.Property<int?>("id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("kol")
+                        .HasColumnType("int");
+
+                    b.Property<string>("nm")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("Order_CountOtchet");
+                });
+
             modelBuilder.Entity("TorgovayaPloshadka.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -385,7 +428,12 @@ namespace TorgovayaPloshadka.Data.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", t =>
+                        {
+                            t.HasTrigger("AddDelCount");
+
+                            t.HasTrigger("UpdCount");
+                        });
                 });
 
             modelBuilder.Entity("TorgovayaPloshadka.Models.Supplier", b =>
@@ -423,6 +471,27 @@ namespace TorgovayaPloshadka.Data.Migrations
                     b.HasKey("SupplierId");
 
                     b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("TorgovayaPloshadka.Models.CustomUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<int?>("DoljnostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Secsurname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasIndex("DoljnostId");
+
+                    b.HasDiscriminator().HasValue("CustomUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -512,6 +581,15 @@ namespace TorgovayaPloshadka.Data.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("TorgovayaPloshadka.Models.CustomUser", b =>
+                {
+                    b.HasOne("TorgovayaPloshadka.Models.Doljnost", "Doljnost")
+                        .WithMany("CustomUsers")
+                        .HasForeignKey("DoljnostId");
+
+                    b.Navigation("Doljnost");
+                });
+
             modelBuilder.Entity("TorgovayaPloshadka.Models.Category", b =>
                 {
                     b.Navigation("Product");
@@ -520,6 +598,11 @@ namespace TorgovayaPloshadka.Data.Migrations
             modelBuilder.Entity("TorgovayaPloshadka.Models.Customer", b =>
                 {
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("TorgovayaPloshadka.Models.Doljnost", b =>
+                {
+                    b.Navigation("CustomUsers");
                 });
 
             modelBuilder.Entity("TorgovayaPloshadka.Models.Manufacturer", b =>
